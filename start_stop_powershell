@@ -1,0 +1,19 @@
+Get-Service -DisplayName "Cryptographic Services" | Stop-Service
+
+Get-Service -DisplayName "Cryptographic Services" | Start-Service
+
+ 
+
+Get-Service -DisplayName "Commvault Client Manager Service (Instance001)" | Stop-Service
+
+Get-Service -DisplayName "Commvault Communications Service (Instance001)" | Stop-Service
+
+Get-Service -DisplayName "Commvault Network Daemon (Instance001)" | Stop-Service
+
+ 
+
+Get-Service -DisplayName "Commvault Client Manager Service (Instance001)" | Start-Service
+
+Get-Service -DisplayName "Commvault Communications Service (Instance001)" | Start-Service
+
+Get-Service -DisplayName "Commvault Network Daemon (Instance001)" | Start-Service
