@@ -1,0 +1,30 @@
+How to manually remove CommVault
+Try removing products by Microsoft uninstall tool first
+
+Uninstall all previous commvault installs using the windows tool
+
+https://support.microsoft.com/en-us/help/17588/fix-problems-that-block-programs-from-being-installed-or-removed
+
+- Select problems installing software and look for an entry called windows filesystem agent and windows filesystem agent core.
+
+If not present then delete the 3 CommVault services
+
+If the CommVault software agent(s) fails to un-install from “Add/Remove Programs” or “Programs and Features” you can manually remove
+the agent(s) by deleting the following registry keys.
+
+As a preventative measure I recommend exporting the following registry keys before removal.
+1.        HKLM_Software\CommVault Systems
+2.        HKLM_System\CurrentControlSet\services\    (Find all the GX services and remove them, i.e. GxCVD and GxEvMgrC)
+3.        HKLM_Software\Microsoft\Windows\CurrentVersion\Uninstall\    (Find all CommVault hash keys and remove them)
+4.        HKEY_Classes_Root\Installer\Products\     (Find all CommVault hash keys and remove them)
+5.        Also be sure to check in \Program Files\ and manually delete or rename the Commvault directory
+6.        Start - Run and type in %allusersprofile% and manually delete or rename the CommVault directory
+
+Once all above steps are done go to services.msc and see if you still see stale commvault services not cleaned up.
+
+7. Run sc delete <servicename> from admin cmd prompt if step 2 doesn’t clean it up properly or doesn’t display any GX services in registry correctly.
+(Not needed if all above cleanups done properly)
+
+8.        Once done retry the install.
+
+ 
