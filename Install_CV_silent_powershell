@@ -1,0 +1,41 @@
+##Installing Commvault Agent Silently with PowerShell
+
+<# 
+    Commvault Agent Installation Script
+    - Run as Administrator
+    - Adjust $InstallerPath, $InstallFolder, and $InstallOptions as needed
+    - Logs install output to C:\Temp\CVInstall.log
+#>
+
+$InstallerPath = "C:\Installers\CVMedia.exe"       # Path to Commvault media/installer
+$InstallFolder = "C:\Program Files\Commvault"      # Destination folder
+$LogFile       = "C:\Temp\CVInstall.log"           # Log file for installation
+
+# Common silent install options:
+# /silent : No UI
+# /install : Install components
+# /log <file> : Log file
+# /AcceptEULA : Accept license agreement automatically
+# /Components : List of agents to install (File System, SQL, Exchange, etc.)
+# /InstanceName : CommServe instance
+# /CVdPort : Optional port definition
+# /AuthCode : Authorization code (for automatic registration)
+# /CommCellHost : CommServe name or IP
+
+$InstallOptions = "/silent /install /AcceptEULA /log `"$LogFile`" /Components FileSystem /InstallFolder `"$InstallFolder`" /CommCellHost commserve.example.com /AuthCode YOUR_AUTH_CODE"
+
+Write-Host "Starting Commvault installation..."
+Start-Process -FilePath $InstallerPath -ArgumentList $InstallOptions -Wait -PassThru
+Write-Host "Commvault installation completed. Check log at $LogFile"
+
+
+###
+##Installing Specific Agents (Example)
+
+##File System Agent: /Components FileSystem
+
+##SQL Agent: /Components MSSQL
+
+##Exchange Agent: /Components Exchange
+
+##Multiple: /Components FileSystem,MSSQL,Exchange
