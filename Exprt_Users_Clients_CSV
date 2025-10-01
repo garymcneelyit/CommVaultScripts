@@ -1,0 +1,2 @@
+$users.users | Select-Object id, userName, fullName, emailAddress | Export-Csv "C:\Temp\CVUsers.csv" -NoTypeInformation
+$clients.clients | Select-Object clientId, clientName, osInfo | Export-Csv "C:\Temp\CVClients.csv" -NoTypeInformation
