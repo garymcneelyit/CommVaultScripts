@@ -1,0 +1,20 @@
+#Start a Backup Job
+
+$body = @{
+    taskInfo = @{
+        task = @{ taskType = 1 }
+        subTasks = @(
+            @{
+                subTask = @{ subTaskType = 2; operationType = 2 }
+                options = @{
+                    backupOpts = @{ backupLevel = "Full" }
+                }
+            }
+        )
+    }
+} | ConvertTo-Json -Depth 10
+
+$clientId = 5  # replace with actual clientId
+$backupUrl = "https://$CommCell/webconsole/api/Job?clientId=$clientId"
+
+Invoke-RestMethod -Method Post -Uri $backupUrl -Headers $headers -Body $body -ContentType "application/json"
