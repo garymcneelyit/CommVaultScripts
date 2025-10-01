@@ -1,0 +1,58 @@
+# === Function: Get Token ===
+function Get-CVAuthToken {
+    param(
+        [string]$CommCell = "commserve.example.com",
+        [string]$Username,
+        [string]$Password
+    )
+
+    $pwB64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($Password))
+
+    $body = @{
+        username = $Username
+        password = $pwB64
+        timeout  = 30
+    } | ConvertTo-Json
+
+    $loginUrl = "https://$CommCell/webconsole/api/Login"
+    $response = Invoke-RestMethod -Method Post -Uri $loginUrl -Body $body -ContentType "application/json"
+    return $response.token
+}
+
+# === Variables ===
+$CommCell = "commserve.example.com"
+$User     = "admin"
+$Pass     = "P@ssw0rd!"
+$CsvPath  = "C:\Temp\Commvault_BackupJobs.csv"
+
+# === Get Token ===
+$Token   = Get-CVAuthToken -CommCell $CommCell -Username $User -Password $Pass
+$headers = @{ "Authtoken" = $Token; "Accept" = "application/json" }
+
+# === Build Job Query (last 7 days, backup jobs only) ===
+$endDate   = [int][double]::Parse((Get-Date -UFormat %s))         # current time (Unix epoch)
+$startDate = [int][double]::Parse((Get-Date).AddDays(-7).ToUniversalTime().Subtract((Get-Date "1970-01-01")).TotalSeconds)
+
+$jobUrl = "https://$CommCell/webconsole/api/Job?jobFilter=backup&fromTime=$startDate&toTime=$endDate"
+
+# === Get Jobs ===
+$response = Invoke-RestMethod -Method Get -Uri $jobUrl -Headers $headers
+
+# === Flatten Job Data ===
+$jobs = $response.jobs | ForEach-Object {
+    [PSCustomObject]@{
+        JobId       = $_.jobId
+        ClientName  = $_.clientName
+        BackupSet   = $_.backupSetName
+        SubClient   = $_.subclientName
+        StartTime   = (Get-Date ([System.DateTimeOffset]::FromUnixTimeSeconds($_.startTime)).DateTime)
+        EndTime     = (Get-Date ([System.DateTimeOffset]::FromUnixTimeSeconds($_.endTime)).DateTime)
+        Status      = $_.status
+        BackupLevel = $_.backupLevel
+        SizeGB      = [math]::Round($_.sizeMB / 1024,2)
+    }
+}
+
+# === Export to CSV ===
+$jobs | Export-Csv -Path $CsvPath -NoTypeInformation -Force
+Write-Host "Exported $($jobs.Count) backup jobs to $CsvPath"
