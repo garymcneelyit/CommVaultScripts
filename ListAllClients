@@ -1,0 +1,7 @@
+$CommCell = "commserve.example.com"
+$Token    = Get-CVAuthToken -CommCell $CommCell -Username "admin" -Password "P@ssw0rd!"
+
+$headers = @{ "Authtoken" = $Token; "Accept" = "application/json" }
+
+$clients = Invoke-RestMethod -Method Get -Uri "https://$CommCell/webservice/Client" -Headers $headers
+$clients.clients | Select-Object clientId, clientName, osInfo
