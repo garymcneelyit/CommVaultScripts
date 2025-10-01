@@ -1,0 +1,3 @@
+$jobId = 12345
+$job = Invoke-RestMethod -Method Get -Uri "https://$CommCell/webconsole/api/Job/$jobId" -Headers $headers
+$job.jobDetail
