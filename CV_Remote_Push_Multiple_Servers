@@ -1,0 +1,9 @@
+##If you want to run this on multiple machines (with WinRM/PSRemoting enabled):
+$Servers = @("Server01","Server02","Server03")
+$Installer = "\\fileshare\Commvault\CVMedia.exe"
+$Options   = "/silent /install /AcceptEULA /log C:\Temp\CVInstall.log /Components FileSystem /CommCellHost commserve.example.com /AuthCode YOUR_AUTH_CODE"
+
+Invoke-Command -ComputerName $Servers -ScriptBlock {
+    param($Installer,$Options)
+    Start-Process -FilePath $Installer -ArgumentList $Options -Wait -PassThru
+} -ArgumentList $Installer,$Options
